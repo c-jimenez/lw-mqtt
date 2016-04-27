@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="client">
+      <UniqueIdentifier>{cfb983d9-4dd8-4b1b-be45-25b37f4cb13d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="broker">
+      <UniqueIdentifier>{6ebe3339-85a1-414c-ad30-26e5309291b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{07df075d-253c-4b0b-997f-55b641a2d1b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="packet">
+      <UniqueIdentifier>{658b35dc-2b5c-496c-b4f8-e6b516ce0dce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stream">
+      <UniqueIdentifier>{33a7ee12-e596-4214-be23-377ab39496a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{2b35b4c4-defc-410b-951d-20fd8c4a80a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{2ebe28c9-7376-4e10-8477-51ad1a3828ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\client\mqtt_client.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\packet\mqtt_packet_deserialize.c">
+      <Filter>packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\packet\mqtt_packet_serialize.c">
+      <Filter>packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\socket\windows\mqtt_socket_winsock.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\stream\buffer_stream.c">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\stream\socket_stream.c">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\version.c" />
+    <ClCompile Include="..\..\..\src\time\mqtt_timer.c">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\time\windows\mqtt_time_windows.c">
+      <Filter>time</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\client\mqtt_client.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\config\mqtt_config.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\config\stdheaders.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\packet\mqtt_packet_deserialize.h">
+      <Filter>packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\packet\mqtt_packet_serialize.h">
+      <Filter>packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\socket\mqtt_socket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\stream\buffer_stream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\stream\input_stream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\stream\output_stream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\stream\socket_stream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\mqtt.h" />
+    <ClInclude Include="..\..\..\src\mqtt_error.h" />
+    <ClInclude Include="..\..\..\src\time\mqtt_time.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\time\mqtt_timer.h">
+      <Filter>time</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
