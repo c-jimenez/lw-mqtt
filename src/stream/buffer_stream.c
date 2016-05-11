@@ -139,27 +139,18 @@ static bool buffer_stream_reader(input_stream_t* const stream, void* data, const
     parameters are already checked.
     */
 
-    /* Check stream initialization */
-    if (stream->param != NULL)
+    /* Check size left into stream */
+    if (stream->read + size <= stream->size)
     {
-        /* Check size left into stream */
-        if (stream->read + size <= stream->size)
-        {
-            /* Copy data into the buffer */
-            memcpy(data, stream->param, size);
-            stream->read += size;
-            stream->param = (void*)((intptr_t)stream->param + (intptr_t)size);
-            ret = true;
-        }
-        else
-        {
-            stream->last_error = MQTT_ERR_INPUT_STREAM_EMPTY;
-        }
+        /* Copy data into the buffer */
+        memcpy(data, stream->param, size);
+        stream->read += size;
+        stream->param = (void*)((intptr_t)stream->param + (intptr_t)size);
+        ret = true;
     }
     else
     {
-        /* Error */
-        stream->last_error = MQTT_ERR_INVALID_PARAM;
+        stream->last_error = MQTT_ERR_INPUT_STREAM_EMPTY;
     }
 
     return ret;
@@ -204,27 +195,18 @@ static bool buffer_stream_writer(output_stream_t* const stream, const void* data
        parameters are already checked.
     */
 
-    /* Check stream initialization */
-    if (stream->param != NULL)
+    /* Check size left into buffer */
+    if (stream->written + size <= stream->size)
     {
-        /* Check size left into buffer */
-        if (stream->written + size <= stream->size)
-        {
-            /* Copy data into the stream buffer */
-            memcpy(stream->param, data, size);
-            stream->written += size;
-            stream->param = (void*)((intptr_t)stream->param + (intptr_t)size);
-            ret = true;
-        }
-        else
-        {
-            stream->last_error = MQTT_ERR_OUTPUT_STREAM_FULL;
-        }
+        /* Copy data into the stream buffer */
+        memcpy(stream->param, data, size);
+        stream->written += size;
+        stream->param = (void*)((intptr_t)stream->param + (intptr_t)size);
+        ret = true;
     }
     else
     {
-        /* Error */
-        stream->last_error = MQTT_ERR_INVALID_PARAM;
+        stream->last_error = MQTT_ERR_OUTPUT_STREAM_FULL;
     }
 
     return ret;

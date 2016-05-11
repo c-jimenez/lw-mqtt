@@ -30,12 +30,41 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 /** \brief Maximum level of QoS (shall be less or equal than 2) */
 #define MQTT_CFG_MAX_QOS_LEVEL  2u
 
+/** \brief Enable the multitasking */
+#define MQTT_MULTITASKING_ENABLED
+
+
 
 /** \brief Maximum length in bytes of a topic string for the MQTT client */
-#define MQTT_CLIENT_MAX_TOPIC_LENGTH    512
+#define MQTT_CLIENT_MAX_TOPIC_LENGTH    512u
 
 /** \brief Maximum length in byte of the payload of a PUBLISH message for the MQTT client */
-#define MQTT_CLIENT_MAX_PAYLOAD_SIZE    1024
+#define MQTT_CLIENT_MAX_PAYLOAD_SIZE    1024u
+
+
+
+/** \brief Maximum length in bytes of a topic string for the MQTT broker */
+#define MQTT_BROKER_MAX_TOPIC_LENGTH    512u
+
+/** \brief Maximum length in byte of the payload of a PUBLISH message for the MQTT broker */
+#define MQTT_BROKER_MAX_PAYLOAD_SIZE    2048u
+
+/** \brief Maximum number of simultaneous clients for the MQTT broker */
+#define MQTT_BROKER_MAX_CLIENT          10u
+
+/** \brief Maximum length in bytes of a will topic string for the MQTT broker */
+#define MQTT_BROKER_MAX_WILL_TOPIC_LENGTH    512u
+
+/** \brief Maximum length in byte of a will message for the MQTT broker */
+#define MQTT_BROKER_MAX_WILL_MESSAGE_SIZE    2048u
+
+/** \brief Maximum length in bytes of a client id string for the MQTT broker */
+#define MQTT_BROKER_MAX_CLIENT_ID_LENGTH     32u
+
+
+
+
+
 
 
 

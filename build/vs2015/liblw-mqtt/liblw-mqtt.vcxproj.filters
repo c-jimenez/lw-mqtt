@@ -22,6 +22,9 @@
     <Filter Include="time">
       <UniqueIdentifier>{2ebe28c9-7376-4e10-8477-51ad1a3828ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="oal">
+      <UniqueIdentifier>{73feb2ff-ac3d-40d4-a619-4e5cef2705d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\client\mqtt_client.c">
@@ -48,6 +51,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\time\windows\mqtt_time_windows.c">
       <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\oal\windows\mqtt_mutex_windows.c">
+      <Filter>oal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\broker\mqtt_broker.c">
+      <Filter>broker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +97,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\time\mqtt_timer.h">
       <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\oal\mqtt_mutex.h">
+      <Filter>oal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\oal\windows\mqtt_mutex_t.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\broker\mqtt_broker.h">
+      <Filter>broker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\oal\mqtt_errno.h">
+      <Filter>oal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

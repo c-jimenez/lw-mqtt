@@ -24,6 +24,7 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #include "mqtt.h"
 #include "mqtt_socket.h"
 #include "mqtt_timer.h"
+#include "mqtt_mutex.h"
 #include "socket_stream.h"
 
 #ifdef __cplusplus
@@ -149,6 +150,14 @@ typedef struct _mqtt_client_t
 
     /** \brief Indicate if the client is waiting for a response from the broker */
     bool is_waiting_response;
+
+    #ifdef MQTT_MULTITASKING_ENABLED
+
+    /** \brief Mutex for the MQTT client */
+    mqtt_mutex_t mutex;
+
+    #endif /* MQTT_MULTITASKING_ENABLED */
+
 
 } mqtt_client_t;
 

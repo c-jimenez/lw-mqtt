@@ -64,6 +64,17 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 
+
+/** \brief Minimum MQTT client id size for the broker */
+#define MQTT_BROKER_MIN_CLIENT_ID_LENGTH  23u
+
+/* Check config maximum client id length */
+#if (MQTT_BROKER_MAX_CLIENT_ID_LENGTH < MQTT_BROKER_MIN_CLIENT_ID_LENGTH)
+#error "Invalid maximum length for a MQTT client identifier in the broker configuration file"
+#endif
+
+
+
 /** \brief Minimum encoded string size => 2 bytes (length)*/
 #define MQTT_MIN_ENCODED_STRING_SIZE 2u
 

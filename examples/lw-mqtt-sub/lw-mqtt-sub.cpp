@@ -125,7 +125,8 @@ int main(int argc, char* argv[])
                                                 mqtt_client_disconnect_callback
                                             };
 
-        /* Initialize socket layer */
+        /* Initialize low level layers */
+        mqtt_mutex_init();
         mqtt_socket_init();
 
         /* Create unique Client Id */

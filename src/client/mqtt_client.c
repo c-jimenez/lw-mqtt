@@ -33,7 +33,6 @@ bool mqtt_client_init(mqtt_client_t* const mqtt_client)
     {
         /* Re-init data structure */
         memset(mqtt_client, 0, sizeof(mqtt_client_t));
-        mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
 
         /* Create socket */
         ret = mqtt_socket_open(&mqtt_client->socket, false);
@@ -60,9 +59,27 @@ bool mqtt_client_init(mqtt_client_t* const mqtt_client)
             }
         }
 
+        /* Create the mutex */
+        #ifdef MQTT_MULTITASKING_ENABLED
+        if (ret)
+        {
+            ret = mqtt_mutex_create(&mqtt_client->mutex);
+            if (!ret)
+            {
+                mqtt_client->last_error = mqtt_client->mutex.last_error;
+            }
+        }
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Initialize temp vars for reception */
         mqtt_client->topic.str = mqtt_client->topic_buffer;
         mqtt_client->topic.size = sizeof(mqtt_client->topic_buffer);
+
+        /* MQTT client ready */
+        if (ret)
+        {
+            mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
+        }
     }
 
     return ret;
@@ -79,9 +96,17 @@ bool mqtt_client_set_client_id(mqtt_client_t* const mqtt_client, const char* con
     if ((mqtt_client != NULL) &&
         (client_id != NULL))
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save client id */
         mqtt_client->client_id.str = client_id;
         mqtt_client->client_id.size= (uint16_t)strnlen(client_id, MQTT_MAXIMUM_STRING_SIZE);
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -106,11 +131,19 @@ bool mqtt_client_set_credentials(mqtt_client_t* const mqtt_client, const char* c
         (username != NULL) &&
         !((password == NULL) && (password_length!=0u)))
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save credentials */
         mqtt_client->credentials.username.str = username;
         mqtt_client->credentials.username.size = (uint16_t)strnlen(username, MQTT_MAXIMUM_STRING_SIZE);
         mqtt_client->credentials.password.str = (const char*)password;
         mqtt_client->credentials.password.size = password_length;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -136,6 +169,10 @@ bool mqtt_client_set_will(mqtt_client_t* const mqtt_client, const char* const to
         !((message == NULL) && (message_length != 0u)) &&
         (qos <= MQTT_CFG_MAX_QOS_LEVEL))
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save will */
         mqtt_client->will.topic.str = topic;
         mqtt_client->will.topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
@@ -143,6 +180,10 @@ bool mqtt_client_set_will(mqtt_client_t* const mqtt_client, const char* const to
         mqtt_client->will.message.size = message_length;
         mqtt_client->will.qos = qos;
         mqtt_client->will.retain = retain;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -165,8 +206,16 @@ bool mqtt_client_set_callbacks(mqtt_client_t* const mqtt_client, const mqtt_clie
     if ((mqtt_client != NULL) &&
         (callbacks != NULL))
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save callbacks */
         memcpy(&mqtt_client->callbacks, callbacks, sizeof(mqtt_client_callbacks_t));
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -188,8 +237,16 @@ bool mqtt_client_set_keepalive(mqtt_client_t* const mqtt_client, const uint16_t 
     /* Check params */
     if (mqtt_client != NULL)
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save keepalive */
         mqtt_client->keepalive = sec_keepalive;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;
@@ -203,8 +260,16 @@ bool mqtt_client_set_broker_response_timeout(mqtt_client_t* const mqtt_client, c
     /* Check params */
     if (mqtt_client != NULL)
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+        
         /* Save broker response timeout */
         mqtt_client->broker_response_timeout = ms_broker_response_timeout;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;
@@ -218,8 +283,16 @@ bool mqtt_client_set_user_data(mqtt_client_t* const mqtt_client, void* user_data
     /* Check params */
     if (mqtt_client != NULL)
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save user data */
         mqtt_client->user_data = user_data;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;
@@ -234,8 +307,16 @@ bool mqtt_client_get_user_data(mqtt_client_t* const mqtt_client, void** user_dat
     if ((mqtt_client != NULL) &&
         (user_data != NULL))
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Copy user data */
         (*user_data) = mqtt_client->user_data;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;
@@ -249,8 +330,16 @@ bool mqtt_client_set_poll_period(mqtt_client_t* const mqtt_client, const uint32_
     /* Check params */
     if (mqtt_client != NULL)
     {
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
         /* Save poll period */
         mqtt_client->poll_period = ms_poll_period;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;
@@ -263,24 +352,39 @@ bool mqtt_client_connect(mqtt_client_t* const mqtt_client, const char* const bro
 
     /* Check params */
     if ((mqtt_client != NULL) &&
-        (broker_ip != NULL) &&
-        (mqtt_client->state == MQTT_CLIENT_STATE_DISCONNECTED))
+        (broker_ip != NULL))
     {
-        /* Connect to broker */
-        ret = mqtt_socket_connect(&mqtt_client->socket, broker_ip, broker_port);
-        if (ret)
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
+        /* Check disconnected state */
+        if (mqtt_client->state == MQTT_CLIENT_STATE_DISCONNECTED)
         {
-            mqtt_client->state = MQTT_CLIENT_STATE_TCP_CONNECTING;
+            /* Connect to broker */
+            ret = mqtt_socket_connect(&mqtt_client->socket, broker_ip, broker_port);
+            if (ret)
+            {
+                mqtt_client->state = MQTT_CLIENT_STATE_TCP_CONNECTING;
+            }
+            else
+            {
+                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_PENDING)
+                {
+                    mqtt_client->state = MQTT_CLIENT_STATE_TCP_CONNECTING;
+                    ret = true;
+                }
+                mqtt_client->last_error = mqtt_client->socket.last_error;
+            }
         }
         else
         {
-            if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_PENDING)
-            {
-                mqtt_client->state = MQTT_CLIENT_STATE_TCP_CONNECTING;
-                ret = true;
-            }
-            mqtt_client->last_error = mqtt_client->socket.last_error;
+            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
         }
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -300,19 +404,34 @@ bool mqtt_client_disconnect(mqtt_client_t* const mqtt_client)
     bool ret = false;
 
     /* Check params */
-    if ((mqtt_client != NULL) &&
-        (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED))
+    if (mqtt_client != NULL)
     {
-        /* Disconnect from broker */
-        ret = mqtt_packet_serialize_disconnect(&mqtt_client->outstream);
-        mqtt_client->state = MQTT_CLIENT_STATE_MQTT_DISCONNECTING;
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
 
-        /* Close TCP connection */
-        ret = mqtt_socket_close(&mqtt_client->socket);
-        if (!ret)
+        /* Check connected state */
+        if (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED)
         {
-            mqtt_client->last_error = mqtt_client->socket.last_error;
+            /* Disconnect from broker */
+            ret = mqtt_packet_serialize_disconnect(&mqtt_client->outstream);
+            mqtt_client->state = MQTT_CLIENT_STATE_MQTT_DISCONNECTING;
+
+            /* Close TCP connection */
+            ret = mqtt_socket_close(&mqtt_client->socket);
+            if (!ret)
+            {
+                mqtt_client->last_error = mqtt_client->socket.last_error;
+            }
         }
+        else
+        {
+            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+        }
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -333,40 +452,55 @@ bool mqtt_client_subscribe(mqtt_client_t* const mqtt_client, const char* const t
 
     /* Check params */
     if ((mqtt_client != NULL) &&
-        (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED) &&
         (topic != NULL) &&
         (qos <= MQTT_CFG_MAX_QOS_LEVEL))
     {
-        /* Send SUBSCRIBE packet */
-        mqtt_const_string_t const_topic;
-        const_topic.str = topic;
-        const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
-        ret = mqtt_packet_serialize_subscribe(&mqtt_client->outstream, &const_topic, qos, mqtt_client->packet_id);
-        if (!ret)
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
+        /* Check connected state */
+        if (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED)
         {
-            if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+            /* Send SUBSCRIBE packet */
+            mqtt_const_string_t const_topic;
+            const_topic.str = topic;
+            const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
+            ret = mqtt_packet_serialize_subscribe(&mqtt_client->outstream, &const_topic, qos, mqtt_client->packet_id);
+            if (!ret)
             {
-                /* Connection lost : close socket and notify application */
-                (void)mqtt_socket_close(&mqtt_client->socket);
-                if (mqtt_client->callbacks.disconnect != NULL)
+                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
                 {
-                    mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    /* Connection lost : close socket and notify application */
+                    (void)mqtt_socket_close(&mqtt_client->socket);
+                    if (mqtt_client->callbacks.disconnect != NULL)
+                    {
+                        mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    }
+                    mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
                 }
-                mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
             }
+            else
+            {
+                /* Reset keepalive timer */
+                (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
+
+                /* Reset broker response timer */
+                (void)mqtt_timer_reset(&mqtt_client->broker_response_timer);
+                mqtt_client->is_waiting_response = true;
+            }
+
+            /* Next packet id */
+            mqtt_client->packet_id++;
         }
         else
         {
-            /* Reset keepalive timer */
-            (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
-
-            /* Reset broker response timer */
-            (void)mqtt_timer_reset(&mqtt_client->broker_response_timer);
-            mqtt_client->is_waiting_response = true;
+            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
         }
 
-        /* Next packet id */
-        mqtt_client->packet_id++;
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -387,39 +521,54 @@ bool mqtt_client_unsubscribe(mqtt_client_t* const mqtt_client, const char* const
 
     /* Check params */
     if ((mqtt_client != NULL) &&
-        (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED) &&
         (topic != NULL))
     {
-        /* Send SUBSCRIBE packet */
-        mqtt_const_string_t const_topic;
-        const_topic.str = topic;
-        const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
-        ret = mqtt_packet_serialize_unsubscribe(&mqtt_client->outstream, &const_topic, mqtt_client->packet_id);
-        if (!ret)
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
+        /* Check connected state */
+        if (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED)
         {
-            if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+            /* Send SUBSCRIBE packet */
+            mqtt_const_string_t const_topic;
+            const_topic.str = topic;
+            const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
+            ret = mqtt_packet_serialize_unsubscribe(&mqtt_client->outstream, &const_topic, mqtt_client->packet_id);
+            if (!ret)
             {
-                /* Connection lost : close socket and notify application */
-                (void)mqtt_socket_close(&mqtt_client->socket);
-                if (mqtt_client->callbacks.disconnect != NULL)
+                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
                 {
-                    mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    /* Connection lost : close socket and notify application */
+                    (void)mqtt_socket_close(&mqtt_client->socket);
+                    if (mqtt_client->callbacks.disconnect != NULL)
+                    {
+                        mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    }
+                    mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
                 }
-                mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
             }
+            else
+            {
+                /* Reset keepalive timer */
+                (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
+
+                /* Reset broker response timer */
+                (void)mqtt_timer_reset(&mqtt_client->broker_response_timer);
+                mqtt_client->is_waiting_response = true;
+            }
+
+            /* Next packet id */
+            mqtt_client->packet_id++;
         }
         else
         {
-            /* Reset keepalive timer */
-            (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
-
-            /* Reset broker response timer */
-            (void)mqtt_timer_reset(&mqtt_client->broker_response_timer);
-            mqtt_client->is_waiting_response = true;
+            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
         }
 
-        /* Next packet id */
-        mqtt_client->packet_id++;
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -440,38 +589,53 @@ bool mqtt_client_publish(mqtt_client_t* const mqtt_client, const char* const top
     bool ret = false;
 
     /* Check params */
-    if ((mqtt_client != NULL) &&
-        (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED) && 
+    if ((mqtt_client != NULL) && 
         (topic != NULL) &&
         (!((message == NULL) && (length != 0u))) &&
         (qos <= MQTT_CFG_MAX_QOS_LEVEL))
     {
-        /* Send PUBLISH packet */
-        mqtt_const_string_t const_topic;
-        const_topic.str = topic;
-        const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
-        ret = mqtt_packet_serialize_publish(&mqtt_client->outstream, &const_topic, message, length, qos, retain, false, mqtt_client->packet_id);
-        if (!ret)
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
+
+        /* Check connected state */
+        if (mqtt_client->state == MQTT_CLIENT_STATE_MQTT_CONNECTED)
         {
-            if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+            /* Send PUBLISH packet */
+            mqtt_const_string_t const_topic;
+            const_topic.str = topic;
+            const_topic.size = (uint16_t)strnlen(topic, MQTT_MAXIMUM_STRING_SIZE);
+            ret = mqtt_packet_serialize_publish(&mqtt_client->outstream, &const_topic, message, length, qos, retain, false, mqtt_client->packet_id);
+            if (!ret)
             {
-                /* Connection lost : close socket and notify application */
-                (void)mqtt_socket_close(&mqtt_client->socket);
-                if (mqtt_client->callbacks.disconnect != NULL)
+                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
                 {
-                    mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    /* Connection lost : close socket and notify application */
+                    (void)mqtt_socket_close(&mqtt_client->socket);
+                    if (mqtt_client->callbacks.disconnect != NULL)
+                    {
+                        mqtt_client->callbacks.disconnect(mqtt_client, false);
+                    }
+                    mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
                 }
-                mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
             }
+            else
+            {
+                /* Reset keepalive timer */
+                (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
+            }
+
+            /* Next packet id */
+            mqtt_client->packet_id++;
         }
         else
         {
-            /* Reset keepalive timer */
-            (void)mqtt_timer_reset(&mqtt_client->keepalive_timer);
+            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
         }
 
-        /* Next packet id */
-        mqtt_client->packet_id++;
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
     else
     {
@@ -494,6 +658,10 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
     if (mqtt_client != NULL)
     {
         bool disconnected = false;
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_lock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
 
         /* Check current state */
         switch (mqtt_client->state)
@@ -567,7 +735,13 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                 mqtt_control_packet_type_t packet_type;
 
                 /* Check if data is available */
+                #ifdef MQTT_MULTITASKING_ENABLED
+                (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+                #endif /* MQTT_MULTITASKING_ENABLED */
                 callret = mqtt_socket_select(&mqtt_client->socket, mqtt_client->poll_period);
+                #ifdef MQTT_MULTITASKING_ENABLED
+                (void)mqtt_mutex_lock(&mqtt_client->mutex);
+                #endif /* MQTT_MULTITASKING_ENABLED */
                 if (callret)
                 {
                     callret = mqtt_packet_deserialize_packet_header(&mqtt_client->instream, &packet_type, &packet_flags, &packet_length);
@@ -647,7 +821,13 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                 
 
                 /* Check if data is available */
+                #ifdef MQTT_MULTITASKING_ENABLED
+                (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+                #endif /* MQTT_MULTITASKING_ENABLED */
                 callret = mqtt_socket_select(&mqtt_client->socket, mqtt_client->poll_period);
+                #ifdef MQTT_MULTITASKING_ENABLED
+                (void)mqtt_mutex_lock(&mqtt_client->mutex);
+                #endif /* MQTT_MULTITASKING_ENABLED */
                 if (callret)
                 {
                     callret = mqtt_packet_deserialize_packet_header(&mqtt_client->instream, &packet_type, &packet_flags, &packet_length);
@@ -784,6 +964,10 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
             /* Transit to disconnected state */
             mqtt_client->state = MQTT_CLIENT_STATE_DISCONNECTED;
         }
+
+        #ifdef MQTT_MULTITASKING_ENABLED
+        (void)mqtt_mutex_unlock(&mqtt_client->mutex);
+        #endif /* MQTT_MULTITASKING_ENABLED */
     }
 
     return ret;

@@ -137,35 +137,26 @@ static bool socket_stream_reader(input_stream_t* const stream, void* data, const
     parameters are already checked.
     */
 
-    /* Check stream initialization */
-    if (stream->param != NULL)
+    /* Read data from the socket */
+    size_t received = 0u;
+    size_t left = size;
+    void* data_ptr = data;
+    mqtt_socket_t* const mqtt_socket = (mqtt_socket_t*)stream->param;
+    do
     {
-        /* Read data from the socket */
-        size_t received = 0u;
-        size_t left = size;
-        void* data_ptr = data;
-        mqtt_socket_t* const mqtt_socket = (mqtt_socket_t*)stream->param;
-        do
+        ret = mqtt_socket_receive(mqtt_socket, data_ptr, left, &received);
+        if (ret)
         {
-            ret = mqtt_socket_receive(mqtt_socket, data_ptr, left, &received);
-            if (ret)
-            {
-                left -= received;
-                stream->read += received;
-                data_ptr = (void*)((intptr_t)data_ptr + (intptr_t)received);
-            }
-            else
-            {
-                stream->last_error = mqtt_socket->last_error;
-            }
+            left -= received;
+            stream->read += received;
+            data_ptr = (void*)((intptr_t)data_ptr + (intptr_t)received);
         }
-        while (ret && (left != 0u));
+        else
+        {
+            stream->last_error = mqtt_socket->last_error;
+        }
     }
-    else
-    {
-        /* Error */
-        stream->last_error = MQTT_ERR_INVALID_PARAM;
-    }
+    while (ret && (left != 0u));
 
     return ret;
 }
@@ -208,34 +199,25 @@ static bool socket_stream_writer(output_stream_t* const stream, const void* data
     parameters are already checked.
     */
 
-    /* Check stream initialization */
-    if (stream->param != NULL)
+    /* Send data using the socket */
+    size_t sent = 0u;
+    size_t left = size;
+    const void* data_ptr = data;
+    mqtt_socket_t* const mqtt_socket = (mqtt_socket_t*)stream->param;
+    do
     {
-        /* Send data using the socket */
-        size_t sent = 0u;
-        size_t left = size;
-        const void* data_ptr = data;
-        mqtt_socket_t* const mqtt_socket = (mqtt_socket_t*)stream->param;
-        do
+        ret = mqtt_socket_send(mqtt_socket, data_ptr, left, &sent);
+        if (ret)
         {
-            ret = mqtt_socket_send(mqtt_socket, data_ptr, left, &sent);
-            if (ret)
-            {
-                left -= sent;
-                stream->written += sent;
-                data_ptr = (void*)((intptr_t)data_ptr + (intptr_t)sent);
-            }
-            else
-            {
-                stream->last_error = mqtt_socket->last_error;
-            }
-        } while (ret && (left != 0u));
-    }
-    else
-    {
-        /* Error */
-        stream->last_error = MQTT_ERR_INVALID_PARAM;
-    }
+            left -= sent;
+            stream->written += sent;
+            data_ptr = (void*)((intptr_t)data_ptr + (intptr_t)sent);
+        }
+        else
+        {
+            stream->last_error = mqtt_socket->last_error;
+        }
+    } while (ret && (left != 0u));
 
     return ret;
 }

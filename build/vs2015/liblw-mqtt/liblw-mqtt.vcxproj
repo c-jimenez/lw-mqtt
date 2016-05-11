@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\broker\mqtt_broker.c" />
     <ClCompile Include="..\..\..\src\client\mqtt_client.c" />
+    <ClCompile Include="..\..\..\src\oal\windows\mqtt_mutex_windows.c" />
     <ClCompile Include="..\..\..\src\packet\mqtt_packet_deserialize.c" />
     <ClCompile Include="..\..\..\src\packet\mqtt_packet_serialize.c" />
     <ClCompile Include="..\..\..\src\socket\windows\mqtt_socket_winsock.c" />
@@ -30,11 +32,15 @@
     <ClCompile Include="..\..\..\src\version.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\broker\mqtt_broker.h" />
     <ClInclude Include="..\..\..\src\client\mqtt_client.h" />
     <ClInclude Include="..\..\..\src\config\mqtt_config.h" />
     <ClInclude Include="..\..\..\src\config\stdheaders.h" />
     <ClInclude Include="..\..\..\src\mqtt.h" />
     <ClInclude Include="..\..\..\src\mqtt_error.h" />
+    <ClInclude Include="..\..\..\src\oal\mqtt_errno.h" />
+    <ClInclude Include="..\..\..\src\oal\mqtt_mutex.h" />
+    <ClInclude Include="..\..\..\src\oal\windows\mqtt_mutex_t.h" />
     <ClInclude Include="..\..\..\src\packet\mqtt_packet_deserialize.h" />
     <ClInclude Include="..\..\..\src\packet\mqtt_packet_serialize.h" />
     <ClInclude Include="..\..\..\src\socket\mqtt_socket.h" />
@@ -115,7 +121,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,7 +134,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,7 +149,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,7 +166,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -156,7 +156,7 @@ bool mqtt_socket_is_connected(mqtt_socket_t* const mqtt_socket)
         FD_ZERO(&fd_write);
         FD_SET((SOCKET)(mqtt_socket->data), &fd_write);
 
-        callret = select((SOCKET)(mqtt_socket->data) + 1, NULL, &fd_write, NULL, &timeout);
+        callret = select((int)((SOCKET)(mqtt_socket->data)) + 1, NULL, &fd_write, NULL, &timeout);
         if (callret > 0)
         {
             /* Connected */
@@ -351,7 +351,7 @@ bool mqtt_socket_select(mqtt_socket_t* const mqtt_socket, const uint32_t ms_time
         FD_ZERO(&fd_read);
         FD_SET((SOCKET)(mqtt_socket->data), &fd_read);
 
-        callret = select((SOCKET)(mqtt_socket->data) + 1, &fd_read, NULL, NULL, &timeout);
+        callret = select((int)((SOCKET)(mqtt_socket->data)) + 1, &fd_read, NULL, NULL, &timeout);
         if (callret > 0)
         {
             /* Data ready */
