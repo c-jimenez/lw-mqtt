@@ -58,6 +58,9 @@
     <ClCompile Include="..\..\..\src\broker\mqtt_broker.c">
       <Filter>broker</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\oal\windows\mqtt_errno_windows.c">
+      <Filter>oal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\client\mqtt_client.h">
@@ -101,13 +104,16 @@
     <ClInclude Include="..\..\..\src\oal\mqtt_mutex.h">
       <Filter>oal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\oal\windows\mqtt_mutex_t.h">
-      <Filter>socket</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\broker\mqtt_broker.h">
       <Filter>broker</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\oal\mqtt_errno.h">
+      <Filter>oal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\socket\windows\mqtt_socket_t.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\oal\windows\mqtt_mutex_t.h">
       <Filter>oal</Filter>
     </ClInclude>
   </ItemGroup>

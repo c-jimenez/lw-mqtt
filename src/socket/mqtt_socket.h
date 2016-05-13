@@ -21,22 +21,12 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #define MQTT_SOCKET_H
 
 #include "stdheaders.h"
-
+#include "mqtt_socket_t.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif /* __cplusplus */
-
-
-/** \brief MQTT socket */
-typedef struct _mqtt_socket_t
-{
-    /** Implementation specific data */
-    void* data;
-    /** \brief Last error */
-    int32_t last_error;
-} mqtt_socket_t;
 
 
 /** \brief Initialize the MQTT socket module */

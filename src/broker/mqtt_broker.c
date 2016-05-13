@@ -38,10 +38,6 @@ bool mqtt_broker_init(mqtt_broker_t* const mqtt_broker)
 
         /* Create listen socket */
         ret = mqtt_socket_open(&mqtt_broker->listen_socket, false);
-        if (!ret)
-        {
-            mqtt_broker->last_error = mqtt_broker->listen_socket.last_error;
-        }
 
 
         /* Create the mutex */
@@ -49,10 +45,6 @@ bool mqtt_broker_init(mqtt_broker_t* const mqtt_broker)
         if (ret)
         {
             ret = mqtt_mutex_create(&mqtt_broker->mutex);
-            if (!ret)
-            {
-                mqtt_broker->last_error = mqtt_broker->mutex.last_error;
-            }
         }
         #endif /* MQTT_MULTITASKING_ENABLED */
 

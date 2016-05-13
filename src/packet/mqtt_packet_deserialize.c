@@ -127,10 +127,6 @@ bool mqtt_packet_deserialize_whole_packet(mqtt_deserialize_whole_data_t* const w
                                 again = true;
                             }
                         }
-                        else
-                        {
-                            instream->last_error = outstream->last_error;
-                        }
                     }
                 }
                 break;
@@ -146,19 +142,17 @@ bool mqtt_packet_deserialize_whole_packet(mqtt_deserialize_whole_data_t* const w
         /* In progress indication */
         if (!ret)
         {
-            if (instream->last_error == MQTT_ERR_INPUT_STREAM_EMPTY)
+            const int32_t err = mqtt_errno_get();
+            if (err == MQTT_ERR_INPUT_STREAM_EMPTY)
             {
-                instream->last_error = MQTT_ERR_IN_PROGRESS;
+                mqtt_errno_set(MQTT_ERR_IN_PROGRESS);
             }
         }
     }
     else
     {
         /* Error */
-        if (instream != NULL)
-        {
-            instream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -188,10 +182,7 @@ bool mqtt_packet_deserialize_packet_header(input_stream_t* const stream, mqtt_co
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -299,10 +290,7 @@ bool mqtt_packet_deserialize_connect(input_stream_t* const stream, mqtt_string_t
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -336,7 +324,7 @@ bool mqtt_packet_deserialize_connack(input_stream_t* const stream, bool* const s
                     break;
                 default:
                     ret = false;
-                    stream->last_error = MQTT_ERR_INVALID_PACKET_PAYLOAD;
+                    mqtt_errno_set(MQTT_ERR_INVALID_PACKET_PAYLOAD);
                     break;
             }
             (*retcode) = (mqtt_connack_retcode_t)payload[1];
@@ -345,10 +333,7 @@ bool mqtt_packet_deserialize_connack(input_stream_t* const stream, bool* const s
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
 
@@ -387,7 +372,7 @@ bool mqtt_packet_deserialize_publish(input_stream_t* const stream, const uint8_t
         (*qos) = (packet_flags & MQTT_PUBLISH_FLAG_QOS) >> MQTT_PUBLISH_FLAG_QOS_POSITION;
         if ((*qos) > MQTT_CFG_MAX_QOS_LEVEL)
         {
-            stream->last_error = MQTT_ERR_INVALID_PACKET_QOS;
+            mqtt_errno_set(MQTT_ERR_INVALID_PACKET_QOS);
             ret = false;
         }
         else
@@ -426,17 +411,14 @@ bool mqtt_packet_deserialize_publish(input_stream_t* const stream, const uint8_t
             else
             {
                 ret = false;
-                stream->last_error = MQTT_ERR_BUFFER_TOO_SMALL;
+                mqtt_errno_set(MQTT_ERR_BUFFER_TOO_SMALL);
             }
         }
     }
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -515,7 +497,7 @@ bool mqtt_packet_deserialize_subscribe(input_stream_t* const stream, mqtt_string
                 else
                 {
                     ret = false;
-                    stream->last_error = MQTT_ERR_INVALID_PACKET_QOS;
+                    mqtt_errno_set(MQTT_ERR_INVALID_PACKET_QOS);
                 }
             }
         }
@@ -523,10 +505,7 @@ bool mqtt_packet_deserialize_subscribe(input_stream_t* const stream, mqtt_string
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -567,7 +546,7 @@ bool mqtt_packet_deserialize_suback(input_stream_t* const stream, uint8_t* const
                 else
                 {
                     ret = false;
-                    stream->last_error = MQTT_ERR_INVALID_PACKET_QOS;
+                    mqtt_errno_set(MQTT_ERR_INVALID_PACKET_QOS);
                 }
             }
         }
@@ -575,10 +554,7 @@ bool mqtt_packet_deserialize_suback(input_stream_t* const stream, uint8_t* const
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -614,10 +590,7 @@ bool mqtt_packet_deserialize_unsubscribe(input_stream_t* const stream, mqtt_stri
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -712,12 +685,12 @@ static bool mqtt_packet_deserialize_packet_type(input_stream_t* const stream, mq
                 else
                 {
                     ret = false;
-                    stream->last_error = MQTT_ERR_INVALID_PACKET_TYPE;
+                    mqtt_errno_set(MQTT_ERR_INVALID_PACKET_TYPE);
                 }
                 break;
             default:
                 ret = false;
-                stream->last_error = MQTT_ERR_INVALID_PACKET_TYPE;
+                mqtt_errno_set(MQTT_ERR_INVALID_PACKET_TYPE);
                 break;
         }
     }
@@ -771,7 +744,7 @@ static bool mqtt_packet_deserialize_string(input_stream_t* const stream, mqtt_st
         else
         {
             ret = false;
-            stream->last_error = MQTT_ERR_MQTT_STRING_TOO_SMALL;
+            mqtt_errno_set(MQTT_ERR_MQTT_STRING_TOO_SMALL);
         }
     }
 
@@ -805,10 +778,7 @@ static bool mqtt_packet_deserialize_packet_id_only(input_stream_t* const stream,
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -825,7 +795,7 @@ static bool mqtt_packet_deserialize_zero_length(input_stream_t* const stream, co
         /* Check packet size */
         if (packet_length != 0u)
         {
-            stream->last_error = MQTT_ERR_INVALID_PACKET_SIZE;
+            mqtt_errno_set(MQTT_ERR_INVALID_PACKET_SIZE);
         }
         else
         {

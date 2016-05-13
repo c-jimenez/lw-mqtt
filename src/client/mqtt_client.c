@@ -36,27 +36,15 @@ bool mqtt_client_init(mqtt_client_t* const mqtt_client)
 
         /* Create socket */
         ret = mqtt_socket_open(&mqtt_client->socket, false);
-        if (!ret)
-        {
-            mqtt_client->last_error = mqtt_client->socket.last_error;
-        }
 
         /* Initialize input and output streams */
         if (ret)
         {
             ret = socket_stream_output_from_socket(&mqtt_client->outstream, &mqtt_client->socket);
-            if (!ret)
-            {
-                mqtt_client->last_error = mqtt_client->outstream.last_error;
-            }
         }
         if (ret)
         {
             ret = socket_stream_input_from_socket(&mqtt_client->instream, &mqtt_client->socket);
-            if (!ret)
-            {
-                mqtt_client->last_error = mqtt_client->instream.last_error;
-            }
         }
 
         /* Create the mutex */
@@ -64,10 +52,6 @@ bool mqtt_client_init(mqtt_client_t* const mqtt_client)
         if (ret)
         {
             ret = mqtt_mutex_create(&mqtt_client->mutex);
-            if (!ret)
-            {
-                mqtt_client->last_error = mqtt_client->mutex.last_error;
-            }
         }
         #endif /* MQTT_MULTITASKING_ENABLED */
 
@@ -111,10 +95,7 @@ bool mqtt_client_set_client_id(mqtt_client_t* const mqtt_client, const char* con
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -148,10 +129,7 @@ bool mqtt_client_set_credentials(mqtt_client_t* const mqtt_client, const char* c
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -188,10 +166,7 @@ bool mqtt_client_set_will(mqtt_client_t* const mqtt_client, const char* const to
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -220,10 +195,7 @@ bool mqtt_client_set_callbacks(mqtt_client_t* const mqtt_client, const mqtt_clie
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -369,17 +341,17 @@ bool mqtt_client_connect(mqtt_client_t* const mqtt_client, const char* const bro
             }
             else
             {
-                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_PENDING)
+                const int32_t err = mqtt_errno_get();
+                if (err == MQTT_ERR_SOCKET_PENDING)
                 {
                     mqtt_client->state = MQTT_CLIENT_STATE_TCP_CONNECTING;
                     ret = true;
                 }
-                mqtt_client->last_error = mqtt_client->socket.last_error;
             }
         }
         else
         {
-            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+            mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
         }
 
         #ifdef MQTT_MULTITASKING_ENABLED
@@ -389,10 +361,7 @@ bool mqtt_client_connect(mqtt_client_t* const mqtt_client, const char* const bro
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -419,14 +388,10 @@ bool mqtt_client_disconnect(mqtt_client_t* const mqtt_client)
 
             /* Close TCP connection */
             ret = mqtt_socket_close(&mqtt_client->socket);
-            if (!ret)
-            {
-                mqtt_client->last_error = mqtt_client->socket.last_error;
-            }
         }
         else
         {
-            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+            mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
         }
 
         #ifdef MQTT_MULTITASKING_ENABLED
@@ -436,10 +401,7 @@ bool mqtt_client_disconnect(mqtt_client_t* const mqtt_client)
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -469,7 +431,8 @@ bool mqtt_client_subscribe(mqtt_client_t* const mqtt_client, const char* const t
             ret = mqtt_packet_serialize_subscribe(&mqtt_client->outstream, &const_topic, qos, mqtt_client->packet_id);
             if (!ret)
             {
-                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+                const int32_t err = mqtt_errno_get();
+                if (err == MQTT_ERR_SOCKET_FAILED)
                 {
                     /* Connection lost : close socket and notify application */
                     (void)mqtt_socket_close(&mqtt_client->socket);
@@ -495,7 +458,7 @@ bool mqtt_client_subscribe(mqtt_client_t* const mqtt_client, const char* const t
         }
         else
         {
-            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+            mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
         }
 
         #ifdef MQTT_MULTITASKING_ENABLED
@@ -505,10 +468,7 @@ bool mqtt_client_subscribe(mqtt_client_t* const mqtt_client, const char* const t
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -537,7 +497,8 @@ bool mqtt_client_unsubscribe(mqtt_client_t* const mqtt_client, const char* const
             ret = mqtt_packet_serialize_unsubscribe(&mqtt_client->outstream, &const_topic, mqtt_client->packet_id);
             if (!ret)
             {
-                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+                const int32_t err = mqtt_errno_get();
+                if (err == MQTT_ERR_SOCKET_FAILED)
                 {
                     /* Connection lost : close socket and notify application */
                     (void)mqtt_socket_close(&mqtt_client->socket);
@@ -563,7 +524,7 @@ bool mqtt_client_unsubscribe(mqtt_client_t* const mqtt_client, const char* const
         }
         else
         {
-            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+            mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
         }
 
         #ifdef MQTT_MULTITASKING_ENABLED
@@ -573,10 +534,7 @@ bool mqtt_client_unsubscribe(mqtt_client_t* const mqtt_client, const char* const
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -608,7 +566,8 @@ bool mqtt_client_publish(mqtt_client_t* const mqtt_client, const char* const top
             ret = mqtt_packet_serialize_publish(&mqtt_client->outstream, &const_topic, message, length, qos, retain, false, mqtt_client->packet_id);
             if (!ret)
             {
-                if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+                const int32_t err = mqtt_errno_get();
+                if (err == MQTT_ERR_SOCKET_FAILED)
                 {
                     /* Connection lost : close socket and notify application */
                     (void)mqtt_socket_close(&mqtt_client->socket);
@@ -630,7 +589,7 @@ bool mqtt_client_publish(mqtt_client_t* const mqtt_client, const char* const top
         }
         else
         {
-            mqtt_client->last_error = MQTT_ERR_CLIENT_INVALID_STATE;
+            mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
         }
 
         #ifdef MQTT_MULTITASKING_ENABLED
@@ -640,10 +599,7 @@ bool mqtt_client_publish(mqtt_client_t* const mqtt_client, const char* const top
     else
     {
         /* Error */
-        if (mqtt_client != NULL)
-        {
-            mqtt_client->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -712,12 +668,12 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                     {
                         /* Error, disconnect */
                         disconnected = true;
-                        mqtt_client->last_error = mqtt_client->outstream.last_error;
                     }
                 }
                 else
                 {
-                    if (mqtt_client->socket.last_error == MQTT_ERR_SOCKET_FAILED)
+                    const int32_t err = mqtt_errno_get();
+                    if (err == MQTT_ERR_SOCKET_FAILED)
                     {
                         /* Connection lost */
                         disconnected = true;
@@ -788,11 +744,14 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                         /* Disconnect */
                         disconnected = true;
                     }
-
-                    if (mqtt_client->socket.last_error != MQTT_ERR_SOCKET_PENDING)
+                    else
                     {
-                        /* Connection lost */
-                        disconnected = true;
+                        const int32_t err = mqtt_errno_get();
+                        if (err != MQTT_ERR_SOCKET_PENDING)
+                        {
+                            /* Connection lost */
+                            disconnected = true;
+                        }
                     }
                 }
 
@@ -909,9 +868,10 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                 else
                 {
                     /* Check response timeout */
+                    const int32_t err = mqtt_errno_get();
                     if (mqtt_client->is_waiting_response)
                     {
-                        bool has_expired;
+                        bool has_expired = false;
                         (void)mqtt_timer_has_expired(&mqtt_client->broker_response_timer, &has_expired);
                         if (has_expired)
                         {
@@ -920,7 +880,7 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
                         }
                     }
 
-                    if (mqtt_client->socket.last_error != MQTT_ERR_SOCKET_PENDING)
+                    if (err != MQTT_ERR_SOCKET_PENDING)
                     {
                         /* Connection lost */
                         disconnected = true;

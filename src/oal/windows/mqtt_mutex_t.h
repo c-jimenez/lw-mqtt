@@ -35,8 +35,6 @@ typedef struct _mqtt_mutex_t
     /** Implementation specific data */
     CRITICAL_SECTION data;
 
-    /** \brief Last error */
-    int32_t last_error;
 } mqtt_mutex_t;
 
 

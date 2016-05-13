@@ -121,9 +121,6 @@ typedef struct _mqtt_client_t
     /** \brief Input stream */
     input_stream_t instream;
 
-    /** \brief Last error */
-    int32_t last_error;
-
     /** \brief Temp var for the reception of a topic */
     mqtt_string_t topic;
 

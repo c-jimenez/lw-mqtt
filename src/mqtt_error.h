@@ -20,6 +20,7 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef MQTT_ERROR_H
 #define MQTT_ERROR_H
 
+#include "mqtt_errno.h"
 
 /** \brief No error */
 #define MQTT_ERR_SUCCESS                    0

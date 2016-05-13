@@ -105,9 +105,6 @@ typedef struct _mqtt_broker_t
     /** \brief First connected session */
     mqtt_broker_session_t* first_connected_session;
 
-    /** \brief Last error */
-    int32_t last_error;
-
     /** \brief Temp var for the reception of a topic */
     mqtt_string_t topic;
 

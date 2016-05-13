@@ -26,6 +26,7 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 #include "mqtt_client.h"
+#include "mqtt_error.h"
 
 /** \brief Program version */
 #define LW_MQTT_SUB_VERSION "1.0"
@@ -224,7 +225,7 @@ static bool lw_mqtt_sub_parse_parameters(lw_mqtt_sub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.broker_port = atoi(*argv);
+                params.broker_port = (uint16_t)atoi(*argv);
                 topic_listing = false;
             }
             else
@@ -239,7 +240,7 @@ static bool lw_mqtt_sub_parse_parameters(lw_mqtt_sub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.keepalive = atoi(*argv);
+                params.keepalive = (uint16_t)atoi(*argv);
                 topic_listing = false;
             }
             else
@@ -284,7 +285,7 @@ static bool lw_mqtt_sub_parse_parameters(lw_mqtt_sub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.qos = atoi(*argv);
+                params.qos = (uint8_t)atoi(*argv);
                 topic_listing = false;
             }
             else
@@ -351,6 +352,8 @@ static bool lw_mqtt_sub_parse_parameters(lw_mqtt_sub_params_t& params, int argc,
 /** \brief MQTT client connect callback */
 static void mqtt_client_connect_callback(mqtt_client_t* const mqtt_client, const bool connected, const mqtt_connack_retcode_t retcode)
 {
+    MQTT_UNUSED_PARAM(retcode);
+
     /* Get parameters stored in client user data */
     lw_mqtt_sub_params_t* params;
     mqtt_client_get_user_data(mqtt_client, (void**)&params);
@@ -361,7 +364,7 @@ static void mqtt_client_connect_callback(mqtt_client_t* const mqtt_client, const
         const bool ret = mqtt_client_subscribe(mqtt_client, params->topics[params->current_topic].c_str(), params->qos);
         if (!ret)
         {
-            cout << "Error " << mqtt_client->last_error << ": Failed to subscribe to topic [" << params->topics[params->current_topic] << "] with QoS" << static_cast<uint32_t>(params->qos) << endl;
+            cout << "Error " << mqtt_errno_get() << ": Failed to subscribe to topic [" << params->topics[params->current_topic] << "] with QoS" << static_cast<uint32_t>(params->qos) << endl;
         }
         params->current_topic++;
     }
@@ -394,7 +397,7 @@ static void mqtt_client_subscribe_callback(mqtt_client_t* const mqtt_client, con
         const bool ret = mqtt_client_subscribe(mqtt_client, params->topics[params->current_topic].c_str(), params->qos);
         if (!ret)
         {
-            cout << "Error " << mqtt_client->last_error << ": Failed to subscribe to topic [" << params->topics[params->current_topic] << "] with QoS" << static_cast<uint32_t>(params->qos) << endl;
+            cout << "Error " << mqtt_errno_get() << ": Failed to subscribe to topic [" << params->topics[params->current_topic] << "] with QoS" << static_cast<uint32_t>(params->qos) << endl;
         }
         params->current_topic++;
     }
@@ -404,6 +407,10 @@ static void mqtt_client_subscribe_callback(mqtt_client_t* const mqtt_client, con
 static void mqtt_client_publish_received_callback(mqtt_client_t* const mqtt_client, const mqtt_string_t* topic, const void* data,
                                                   const uint32_t length, const uint8_t qos, const bool retain, const bool duplicate)
 {
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(topic);
+    MQTT_UNUSED_PARAM(duplicate);
+
     cout << "PUBLISH received (" << length << " bytes, QoS " << static_cast<uint32_t>(qos);
     if (retain)
     {
@@ -424,6 +431,8 @@ static void mqtt_client_publish_received_callback(mqtt_client_t* const mqtt_clie
 /** \brief MQTT client disconnect callback */
 static void mqtt_client_disconnect_callback(mqtt_client_t* const mqtt_client, const bool expected)
 {
+    MQTT_UNUSED_PARAM(expected);
+
     /* Get parameters stored in client user data */
     lw_mqtt_sub_params_t* params;
     mqtt_client_get_user_data(mqtt_client, (void**)&params);

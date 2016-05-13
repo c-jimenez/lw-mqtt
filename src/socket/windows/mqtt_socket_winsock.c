@@ -57,7 +57,7 @@ bool mqtt_socket_open(mqtt_socket_t* const mqtt_socket, const bool non_blocking)
         if (sock != INVALID_SOCKET)
         {
             /* Save socket handle */
-            mqtt_socket->data = (void*)sock;
+            (*mqtt_socket) = sock;
             ret = true;
 
             /* Apply non-blocking IO option if needed */
@@ -73,7 +73,7 @@ bool mqtt_socket_open(mqtt_socket_t* const mqtt_socket, const bool non_blocking)
         }
         else
         {
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 
@@ -88,14 +88,14 @@ bool mqtt_socket_close(mqtt_socket_t* const mqtt_socket)
     /* Check params */
     if (mqtt_socket != NULL)
     {
-        ret = (shutdown((SOCKET)(mqtt_socket->data), SD_BOTH) == 0);
+        ret = (shutdown((*mqtt_socket), SD_BOTH) == 0);
         if (ret)
         {      
-            ret = (closesocket((SOCKET)(mqtt_socket->data)) == 0);
+            ret = (closesocket((*mqtt_socket)) == 0);
         }
         if (!ret)
         {
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 
@@ -115,7 +115,7 @@ bool mqtt_socket_connect(mqtt_socket_t* const mqtt_socket, const char* const ip_
         addr.sin_family = PF_INET;
         addr.sin_port = htons(port);
         addr.sin_addr.s_addr = inet_addr(ip_address);
-        ret = (connect((SOCKET)(mqtt_socket->data), (struct sockaddr *)&addr, sizeof(addr)) == 0);
+        ret = (connect((*mqtt_socket), (struct sockaddr *)&addr, sizeof(addr)) == 0);
         if (!ret)
         {
             /* No connection, check error */
@@ -123,12 +123,12 @@ bool mqtt_socket_connect(mqtt_socket_t* const mqtt_socket, const char* const ip_
             if ((err == WSAEWOULDBLOCK) || (err == WSAEINPROGRESS))
             {
                 /* Connection pending */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+                mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
             }
             else
             {
                 /* Connection rejected */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+                mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
             }
         }
     }
@@ -154,9 +154,9 @@ bool mqtt_socket_is_connected(mqtt_socket_t* const mqtt_socket)
         timeout.tv_usec = 0;
 
         FD_ZERO(&fd_write);
-        FD_SET((SOCKET)(mqtt_socket->data), &fd_write);
+        FD_SET((*mqtt_socket), &fd_write);
 
-        callret = select((int)((SOCKET)(mqtt_socket->data)) + 1, NULL, &fd_write, NULL, &timeout);
+        callret = select((int)(*mqtt_socket) + 1, NULL, &fd_write, NULL, &timeout);
         if (callret > 0)
         {
             /* Connected */
@@ -165,12 +165,12 @@ bool mqtt_socket_is_connected(mqtt_socket_t* const mqtt_socket)
         else if (callret == 0)
         {
             /* Connection pending */
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+            mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
         }
         else
         {
             /* Connection rejected */
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 
@@ -190,10 +190,10 @@ bool mqtt_socket_bind(mqtt_socket_t* const mqtt_socket, const char* const ip_add
         addr.sin_family = PF_INET;
         addr.sin_port = htons(port);
         addr.sin_addr.s_addr = inet_addr(ip_address);
-        ret = (bind((SOCKET)(mqtt_socket->data), (struct sockaddr *)&addr, sizeof(addr)) == 0);
+        ret = (bind((*mqtt_socket), (struct sockaddr *)&addr, sizeof(addr)) == 0);
         if (!ret)
         {
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 
@@ -208,10 +208,10 @@ bool mqtt_socket_listen(mqtt_socket_t* const mqtt_socket)
     /* Check params */
     if (mqtt_socket != NULL)
     {
-        ret = (listen((SOCKET)(mqtt_socket->data), SOMAXCONN) == 0);
+        ret = (listen((*mqtt_socket), SOMAXCONN) == 0);
         if (!ret)
         {
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 
@@ -230,11 +230,11 @@ bool mqtt_socket_accept(mqtt_socket_t* const mqtt_socket, mqtt_socket_t* const c
         struct sockaddr_in addr = { 0 };
         int32_t addr_size = sizeof(addr);
 
-        const SOCKET client_socket = (int32_t)accept((SOCKET)(mqtt_socket->data), (struct sockaddr*)&addr, (int*)&addr_size);
+        const SOCKET client_socket = (int32_t)accept((*mqtt_socket), (struct sockaddr*)&addr, (int*)&addr_size);
         if (client_socket != INVALID_SOCKET)
         {
             /* Success */
-            client_mqtt_socket->data = (void*)client_socket;
+            (*client_mqtt_socket) = client_socket;
             ret = true;
         }
         else
@@ -243,12 +243,12 @@ bool mqtt_socket_accept(mqtt_socket_t* const mqtt_socket, mqtt_socket_t* const c
             if ((err == WSAEWOULDBLOCK) || (err == WSAEINPROGRESS))
             {
                 /* Send pending */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+                mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
             }
             else
             {
                 /* Error */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+                mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
             }
         }
 
@@ -267,7 +267,7 @@ bool mqtt_socket_send(mqtt_socket_t* const mqtt_socket, const void* data, const 
         (data != NULL) &&
         (sent != NULL))
     {
-        const int32_t callret = (int32_t)send((SOCKET)(mqtt_socket->data), (const char*)data, (int)size, 0);
+        const int32_t callret = (int32_t)send((*mqtt_socket), (const char*)data, (int)size, 0);
         if (callret >= 0)
         {
             /* Success */
@@ -280,12 +280,12 @@ bool mqtt_socket_send(mqtt_socket_t* const mqtt_socket, const void* data, const 
             if ((err == WSAEWOULDBLOCK) || (err == WSAEINPROGRESS))
             {
                 /* Send pending */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+                mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
             }
             else
             {
                 /* Error */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+                mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
             }
         }
 
@@ -304,7 +304,7 @@ bool mqtt_socket_receive(mqtt_socket_t* const mqtt_socket, void* data, const siz
         (data != NULL) &&
         (received != NULL))
     {
-        const int32_t callret = (int32_t)recv((SOCKET)(mqtt_socket->data), (char*)data, (int)size, 0);
+        const int32_t callret = (int32_t)recv((*mqtt_socket), (char*)data, (int)size, 0);
         if (callret >= 0)
         {
             /* Success */
@@ -317,12 +317,12 @@ bool mqtt_socket_receive(mqtt_socket_t* const mqtt_socket, void* data, const siz
             if ((err == WSAEWOULDBLOCK) || (err == WSAEINPROGRESS))
             {
                 /* Receive pending */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+                mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
             }
             else
             {
                 /* Error */
-                mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+                mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
             }
         }
 
@@ -349,9 +349,9 @@ bool mqtt_socket_select(mqtt_socket_t* const mqtt_socket, const uint32_t ms_time
         timeout.tv_usec = (((long)ms_timeout) - (timeout.tv_sec * 1000)) * 1000;
 
         FD_ZERO(&fd_read);
-        FD_SET((SOCKET)(mqtt_socket->data), &fd_read);
+        FD_SET((*mqtt_socket), &fd_read);
 
-        callret = select((int)((SOCKET)(mqtt_socket->data)) + 1, &fd_read, NULL, NULL, &timeout);
+        callret = select((int)(*mqtt_socket) + 1, &fd_read, NULL, NULL, &timeout);
         if (callret > 0)
         {
             /* Data ready */
@@ -360,12 +360,12 @@ bool mqtt_socket_select(mqtt_socket_t* const mqtt_socket, const uint32_t ms_time
         else if (callret == 0)
         {
             /* No data available */
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_PENDING;
+            mqtt_errno_set(MQTT_ERR_SOCKET_PENDING);
         }
         else
         {
             /* Connection closed */
-            mqtt_socket->last_error = MQTT_ERR_SOCKET_FAILED;
+            mqtt_errno_set(MQTT_ERR_SOCKET_FAILED);
         }
     }
 

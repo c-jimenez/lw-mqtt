@@ -25,6 +25,7 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 #include "mqtt_client.h"
+#include "mqtt_errno.h"
 
 /** \brief Program version */
 #define LW_MQTT_PUB_VERSION "1.0"
@@ -229,7 +230,7 @@ static bool lw_mqtt_pub_parse_parameters(lw_mqtt_pub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.broker_port = atoi(*argv);
+                params.broker_port = (uint16_t)atoi(*argv);
             }
             else
             {
@@ -243,7 +244,7 @@ static bool lw_mqtt_pub_parse_parameters(lw_mqtt_pub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.keepalive = atoi(*argv);
+                params.keepalive = (uint16_t)atoi(*argv);
             }
             else
             {
@@ -285,7 +286,7 @@ static bool lw_mqtt_pub_parse_parameters(lw_mqtt_pub_params_t& params, int argc,
             {
                 argv++;
                 argc--;
-                params.qos = atoi(*argv);
+                params.qos = (uint8_t)atoi(*argv);
             }
             else
             {
@@ -361,20 +362,23 @@ static bool lw_mqtt_pub_parse_parameters(lw_mqtt_pub_params_t& params, int argc,
 /** \brief MQTT client connect callback */
 static void mqtt_client_connect_callback(mqtt_client_t* const mqtt_client, const bool connected, const mqtt_connack_retcode_t retcode)
 {
+    MQTT_UNUSED_PARAM(retcode);
+    MQTT_UNUSED_PARAM(connected);
+
     /* Get parameters stored in client user data */
     lw_mqtt_pub_params_t* params;
     mqtt_client_get_user_data(mqtt_client, (void**)&params);
 
     /* Publish the message */
     int32_t exit_code = 1;
-    const bool ret = mqtt_client_publish(mqtt_client, params->topic.c_str(), params->message.c_str(), params->message.length(), params->qos, params->retain);
+    const bool ret = mqtt_client_publish(mqtt_client, params->topic.c_str(), params->message.c_str(), (uint32_t)params->message.length(), params->qos, params->retain);
     if (ret)
     {
         exit_code = 0;
     }
     else
     {
-        cout << "Error " << mqtt_client->last_error << ": Failed to send [" << params->message << "] to topic [" << params->topic << "] with QoS" << static_cast<uint32_t>(params->qos) << " and retain=" << (params->retain?"true":"false") << endl;
+        cout << "Error " << mqtt_errno_get() << ": Failed to send [" << params->message << "] to topic [" << params->topic << "] with QoS" << static_cast<uint32_t>(params->qos) << " and retain=" << (params->retain?"true":"false") << endl;
     }
 
     /* Send disconnect */
@@ -387,25 +391,33 @@ static void mqtt_client_connect_callback(mqtt_client_t* const mqtt_client, const
 /** \brief MQTT client subscribe callback */
 static void mqtt_client_subscribe_callback(mqtt_client_t* const mqtt_client, const uint8_t granted_qos, const bool subscribe_succeed)
 {
-
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(granted_qos);
+    MQTT_UNUSED_PARAM(subscribe_succeed);
 }
 
 /** \brief MQTT client unsubscribe callback */
 static void mqtt_client_unsubscribe_callback(mqtt_client_t* const mqtt_client, const bool unsubscribe_succeed)
 {
-
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(unsubscribe_succeed);
 }
 
 /** \brief MQTT client publish callback */
 static void mqtt_client_publish_callback(mqtt_client_t* const mqtt_client, const bool publish_succeed)
 {
-
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(publish_succeed);
 }
 
 /** \brief MQTT client publish received callback */
 static void mqtt_client_publish_received_callback(mqtt_client_t* const mqtt_client, const mqtt_string_t* topic, const void* data,
                                                   const uint32_t length, const uint8_t qos, const bool retain, const bool duplicate)
 {
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(topic);
+    MQTT_UNUSED_PARAM(duplicate);
+
     cout << "PUBLISH received (" << length << " bytes, QoS " << static_cast<uint32_t>(qos);
     if (retain)
     {
@@ -426,5 +438,6 @@ static void mqtt_client_publish_received_callback(mqtt_client_t* const mqtt_clie
 /** \brief MQTT client disconnect callback */
 static void mqtt_client_disconnect_callback(mqtt_client_t* const mqtt_client, const bool expected)
 {
-
+    MQTT_UNUSED_PARAM(mqtt_client);
+    MQTT_UNUSED_PARAM(expected);
 }

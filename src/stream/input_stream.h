@@ -53,9 +53,6 @@ struct _input_stream_t
     /** \brief Stream size in bytes (UINT32_MAX = infinite size) */
     size_t size;
 
-    /** \brief Last error */
-    int32_t last_error;
-
     /** \brief Parameter => to be used for implementation dependant data */
     void* param;
 };

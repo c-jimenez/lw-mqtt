@@ -50,7 +50,6 @@ bool buffer_stream_input_from_buffer(input_stream_t* const stream, uint8_t buffe
         stream->reader = buffer_stream_reader;
         stream->size = size;
         stream->read = 0u;
-        stream->last_error = MQTT_ERR_SUCCESS;
         stream->param = buffer;
 
         ret = true;
@@ -58,10 +57,7 @@ bool buffer_stream_input_from_buffer(input_stream_t* const stream, uint8_t buffe
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -81,7 +77,6 @@ bool buffer_stream_output_from_buffer(output_stream_t* const stream, uint8_t buf
         stream->writer = buffer_stream_writer;
         stream->size = size;
         stream->written = 0u;
-        stream->last_error = MQTT_ERR_SUCCESS;
         stream->param = buffer;
 
         ret = true;
@@ -89,10 +84,7 @@ bool buffer_stream_output_from_buffer(output_stream_t* const stream, uint8_t buf
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -113,17 +105,13 @@ static bool buffer_stream_reset_input(input_stream_t* const stream, const size_t
         stream->param = (void*)((intptr_t)stream->param - (intptr_t)stream->read);
         stream->size = new_size;
         stream->read = 0u;
-        stream->last_error = MQTT_ERR_SUCCESS;
 
         ret = true;
     }
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -150,7 +138,7 @@ static bool buffer_stream_reader(input_stream_t* const stream, void* data, const
     }
     else
     {
-        stream->last_error = MQTT_ERR_INPUT_STREAM_EMPTY;
+        mqtt_errno_set(MQTT_ERR_INPUT_STREAM_EMPTY);
     }
 
     return ret;
@@ -169,17 +157,13 @@ static bool buffer_stream_reset_output(output_stream_t* const stream)
         /* Reset stream */
         stream->param = (void*)((intptr_t)stream->param - (intptr_t)stream->written);
         stream->written = 0u;
-        stream->last_error = MQTT_ERR_SUCCESS;
 
         ret = true;
     }
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -206,7 +190,7 @@ static bool buffer_stream_writer(output_stream_t* const stream, const void* data
     }
     else
     {
-        stream->last_error = MQTT_ERR_OUTPUT_STREAM_FULL;
+        mqtt_errno_set(MQTT_ERR_OUTPUT_STREAM_FULL);
     }
 
     return ret;

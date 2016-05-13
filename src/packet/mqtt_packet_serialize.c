@@ -147,7 +147,7 @@ bool mqtt_packet_serialize_connect(output_stream_t* const stream, const mqtt_con
         /* Error */
         if (stream != NULL)
         {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
+            mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
         }
     }
 
@@ -189,10 +189,7 @@ bool mqtt_packet_serialize_connack(output_stream_t* const stream, const bool ses
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -259,10 +256,7 @@ bool mqtt_packet_serialize_publish(output_stream_t* const stream, const mqtt_con
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -343,10 +337,7 @@ bool mqtt_packet_serialize_subscribe(output_stream_t* const stream, const mqtt_c
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -385,10 +376,7 @@ bool mqtt_packet_serialize_suback(output_stream_t* const stream, const uint8_t q
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -433,10 +421,7 @@ bool mqtt_packet_serialize_unsubscribe(output_stream_t* const stream, const mqtt
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -527,10 +512,7 @@ static bool mqtt_packet_serialize_packet_id_only(output_stream_t* const stream, 
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;
@@ -553,10 +535,7 @@ static bool mqtt_packet_serialize_zero_length(output_stream_t* const stream, con
     else
     {
         /* Error */
-        if (stream != NULL)
-        {
-            stream->last_error = MQTT_ERR_INVALID_PARAM;
-        }
+        mqtt_errno_set(MQTT_ERR_INVALID_PARAM);
     }
 
     return ret;

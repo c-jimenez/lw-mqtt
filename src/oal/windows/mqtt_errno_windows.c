@@ -17,38 +17,34 @@ You should have received a copy of the GNU Lesser General Public License
 along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma warning(push, 3)
 #include <windows.h>
-#pragma warning(pop)
 
-#include "mqtt_time.h"
+#include "mqtt_errno.h"
 
-
-/** \brief Initialize the MQTT time module */
-bool mqtt_time_init(void)
+/** \brief Initialize the MQTT errno module */
+bool mqtt_errno_init(void)
 {
     /* Nothing to do */
     return true;
 }
 
-/** \brief De-initialize the MQTT time module */
-bool mqtt_time_deinit(void)
+/** \brief De-initialize the MQTT errno module */
+bool mqtt_errno_deinit(void)
 {
     /* Nothing to do */
     return true;
 }
 
-/** \brief Get the current time in milliseconds */
-bool mqtt_time_get_current(uint32_t* const current_time)
+/** \brief Get the current errno */
+int32_t mqtt_errno_get(void)
 {
-    bool ret = false;
-
-    if (current_time != NULL)
-    {
-        (*current_time) = GetTickCount();
-        ret = true;
-    }
-
+    const int32_t ret = (int32_t)GetLastError();
     return ret;
+}
+
+/** \brief Set the current errno */
+void mqtt_errno_set(const int32_t errno_val)
+{
+    SetLastError((DWORD)errno_val);
 }
 

@@ -17,38 +17,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma warning(push, 3)
+#ifndef MQTT_SOCKET_T_H
+#define MQTT_SOCKET_T_H
+
+#include "stdheaders.h"
 #include <windows.h>
-#pragma warning(pop)
 
-#include "mqtt_time.h"
-
-
-/** \brief Initialize the MQTT time module */
-bool mqtt_time_init(void)
+#ifdef __cplusplus
+extern "C"
 {
-    /* Nothing to do */
-    return true;
+#endif /* __cplusplus */
+
+
+/** \brief MQTT socket */
+typedef SOCKET mqtt_socket_t;
+
+
+#ifdef __cplusplus
 }
+#endif /* __cplusplus */
 
-/** \brief De-initialize the MQTT time module */
-bool mqtt_time_deinit(void)
-{
-    /* Nothing to do */
-    return true;
-}
 
-/** \brief Get the current time in milliseconds */
-bool mqtt_time_get_current(uint32_t* const current_time)
-{
-    bool ret = false;
-
-    if (current_time != NULL)
-    {
-        (*current_time) = GetTickCount();
-        ret = true;
-    }
-
-    return ret;
-}
-
+#endif /* MQTT_SOCKET_T_H */

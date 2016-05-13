@@ -49,6 +49,10 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 
+/** Macro to remove warning on unused parameters */
+#define MQTT_UNUSED_PARAM(x) ((void)x)
+
+
 /** \brief Maximum MQTT string size in bytes => 2 bytes encoding : 0xFFFF */
 #define MQTT_MAXIMUM_STRING_SIZE    0xFFFFu
 
