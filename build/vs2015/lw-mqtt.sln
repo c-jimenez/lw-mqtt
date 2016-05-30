@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lw-mqtt-pub", "lw-mqtt-pub\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lw-mqtt-sub", "lw-mqtt-sub\lw-mqtt-sub.vcxproj", "{302A81C4-EA88-4BE6-BA34-F259C833E7E1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lw-mqtt-broker", "lw-mqtt-broker\lw-mqtt-broker.vcxproj", "{0A84B415-1DD5-40ED-83C9-D358E416B8F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +49,14 @@ Global
 		{302A81C4-EA88-4BE6-BA34-F259C833E7E1}.Release|x64.Build.0 = Release|x64
 		{302A81C4-EA88-4BE6-BA34-F259C833E7E1}.Release|x86.ActiveCfg = Release|Win32
 		{302A81C4-EA88-4BE6-BA34-F259C833E7E1}.Release|x86.Build.0 = Release|Win32
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Debug|x64.ActiveCfg = Debug|x64
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Debug|x64.Build.0 = Debug|x64
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Debug|x86.ActiveCfg = Debug|Win32
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Debug|x86.Build.0 = Debug|Win32
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Release|x64.ActiveCfg = Release|x64
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Release|x64.Build.0 = Release|x64
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Release|x86.ActiveCfg = Release|Win32
+		{0A84B415-1DD5-40ED-83C9-D358E416B8F3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

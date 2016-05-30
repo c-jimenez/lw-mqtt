@@ -33,6 +33,9 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 /** \brief Enable the multitasking */
 #define MQTT_MULTITASKING_ENABLED
 
+/** \brief Enable logs */
+#define MQTT_LOG_ENABLED
+
 
 
 /** \brief Maximum length in bytes of a topic string for the MQTT client */
@@ -43,8 +46,14 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
+/** \brief Maximum number of topics managed by the MQTT broker */
+#define MQTT_BROKER_MAX_TOPIC_COUNT     128u
+
 /** \brief Maximum length in bytes of a topic string for the MQTT broker */
 #define MQTT_BROKER_MAX_TOPIC_LENGTH    512u
+
+/** \brief Maximum number of subscriptions on topics for the MQTT broker **/
+#define MQTT_BROKER_MAX_SUBSCRIPTION_COUNT  (MQTT_BROKER_MAX_TOPIC_COUNT * 4u)
 
 /** \brief Maximum length in byte of the payload of a PUBLISH message for the MQTT broker */
 #define MQTT_BROKER_MAX_PAYLOAD_SIZE    2048u

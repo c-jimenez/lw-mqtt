@@ -26,6 +26,7 @@ using namespace std;
 
 #include "mqtt_client.h"
 #include "mqtt_errno.h"
+#include "mqtt_log.h"
 
 /** \brief Program version */
 #define LW_MQTT_PUB_VERSION "1.0"
@@ -46,6 +47,7 @@ struct lw_mqtt_pub_params_t
         , retain(false)
         , topic("")
         , message("")
+        , verbose(false)
     {}
 
     /** \brief Broker IP address */
@@ -74,6 +76,9 @@ struct lw_mqtt_pub_params_t
 
     /** \brief Message */
     string message;
+
+    /** \brief Verbose mode */
+    bool verbose;
 };
 
 
@@ -136,6 +141,17 @@ int main(int argc, char* argv[])
         /* Initialize low level layers */
         mqtt_mutex_init();
         mqtt_socket_init();
+        mqtt_log_init();
+
+        /* Set log verbosity */
+        if (params.verbose)
+        {
+            mqtt_log_set_filter(MQTT_LOG_LVL_INFO | MQTT_LOG_LVL_ERROR);
+        }
+        else
+        {
+            mqtt_log_set_filter(MQTT_LOG_LVL_ERROR);
+        }
 
         /* Create unique Client Id */
         std::srand(static_cast<unsigned int>(std::time(NULL)));
@@ -179,7 +195,7 @@ static void lw_mqtt_pub_print_usage()
 {
     cout << "usage: lw-mqtt-pub [--version] [--help] [-h <broker-ip>] [-p <broker-port>]" << endl;
     cout << "                   [-k <keepalive>] [--user <username>] [--passwd <password>]" << endl;
-    cout << "                   [-q <QoS>] [-r] [-t <topic>] [-m <message>]" << endl;
+    cout << "                   [-q <QoS>] [-r] [-t <topic>] [-m <message>] [-v]" << endl;
 }
 
 
@@ -326,6 +342,10 @@ static bool lw_mqtt_pub_parse_parameters(lw_mqtt_pub_params_t& params, int argc,
                 cout << "The -t option must be followed by the message to publish.";
                 invalid_arg = true;
             }
+        }
+        else if (strcmp(*argv, "-v") == 0)
+        {
+            params.verbose = true;
         }
         else
         {

@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\broker\mqtt_broker.c" />
     <ClCompile Include="..\..\..\src\client\mqtt_client.c" />
+    <ClCompile Include="..\..\..\src\log\mqtt_log.c" />
+    <ClCompile Include="..\..\..\src\log\mqtt_log_output_printf.c" />
     <ClCompile Include="..\..\..\src\oal\windows\mqtt_errno_windows.c" />
     <ClCompile Include="..\..\..\src\oal\windows\mqtt_mutex_windows.c" />
     <ClCompile Include="..\..\..\src\packet\mqtt_packet_deserialize.c" />
@@ -37,6 +39,8 @@
     <ClInclude Include="..\..\..\src\client\mqtt_client.h" />
     <ClInclude Include="..\..\..\src\config\mqtt_config.h" />
     <ClInclude Include="..\..\..\src\config\stdheaders.h" />
+    <ClInclude Include="..\..\..\src\log\mqtt_log.h" />
+    <ClInclude Include="..\..\..\src\log\mqtt_log_output.h" />
     <ClInclude Include="..\..\..\src\mqtt.h" />
     <ClInclude Include="..\..\..\src\mqtt_error.h" />
     <ClInclude Include="..\..\..\src\oal\mqtt_errno.h" />
@@ -122,8 +126,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\log;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,8 +139,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\log;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,8 +154,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\log;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,8 +171,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\broker;..\..\..\src\client;..\..\..\src\config;..\..\..\src\log;..\..\..\src\oal;..\..\..\src\oal\windows;..\..\..\src\packet;..\..\..\src\socket;..\..\..\src\socket\windows;..\..\..\src\stream;..\..\..\src\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

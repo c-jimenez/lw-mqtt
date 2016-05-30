@@ -893,7 +893,7 @@ bool mqtt_client_task(mqtt_client_t* const mqtt_client)
             default:
             {
                 /* Invalid state */
-                mqtt_client->state = MQTT_ERR_CLIENT_INVALID_STATE;
+                mqtt_errno_set(MQTT_ERR_CLIENT_INVALID_STATE);
                 ret = false;
                 break;
             }

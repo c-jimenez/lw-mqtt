@@ -67,4 +67,7 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 /** \brief Invalid MQTT client state */
 #define MQTT_ERR_CLIENT_INVALID_STATE       -14
 
+/** \brief Invalid MQTT broker state */
+#define MQTT_ERR_BROKER_INVALID_STATE       -15
+
 #endif /* MQTT_ERROR_H */

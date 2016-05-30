@@ -45,9 +45,21 @@ typedef enum _mqtt_broker_state_t
     MQTT_BROKER_STATE_RUNNING = 2u
 } mqtt_broker_state_t;
 
+/** \brief MQTT broker session state */
+typedef enum _mqtt_broker_session_state_t
+{
+    MQTT_BROKER_SESSION_STATE_NOT_INITIALIZED = 0u,
+    MQTT_BROKER_SESSION_STATE_TCP_CONNECTED = 1u,
+    MQTT_BROKER_SESSION_STATE_MQTT_CONNECTED = 2u,
+    MQTT_BROKER_SESSION_STATE_CLOSED = 3u
+} mqtt_broker_session_state_t;
+
 /** \brief MQTT broker session */
 typedef struct _mqtt_broker_session_t
 {
+    /** \brief State */
+    mqtt_broker_session_state_t state;
+
     /** \brief Socket */
     mqtt_socket_t socket;
 
@@ -62,9 +74,6 @@ typedef struct _mqtt_broker_session_t
 
     /** \brief Buffer for the client id string */
     char client_id_topic_buffer[MQTT_BROKER_MAX_CLIENT_ID_LENGTH];
-
-    /** \brief QoS */
-    uint8_t qos;
 
     /** \brief Will */
     mqtt_will_t will;
@@ -83,6 +92,33 @@ typedef struct _mqtt_broker_session_t
 
 } mqtt_broker_session_t;
 
+/** \brief Subscription to a topic on the broker */
+typedef struct _mqtt_broker_subscription_t
+{
+    /** \brief QoS */
+    uint8_t qos;
+
+    /** \brief Session */
+    mqtt_broker_session_t* session;
+
+} mqtt_broker_subscription_t;
+
+/** \brief Topic on the broker */
+typedef struct _mqtt_broker_topic_t
+{
+    /** \brief Topic name */
+    mqtt_string_t topic;
+
+    /** \brief Buffer for the topic name string */
+    char topic_buffer[MQTT_BROKER_MAX_TOPIC_LENGTH];
+
+    /** \brief First subscription on this topic */
+    mqtt_broker_subscription_t* subscription;
+
+    /** \brief Next topic in the list */
+    struct _mqtt_broker_topic_t* next;
+
+} mqtt_broker_topic_t;
 
 /** \brief MQTT broker */
 typedef struct _mqtt_broker_t
@@ -104,6 +140,18 @@ typedef struct _mqtt_broker_t
 
     /** \brief First connected session */
     mqtt_broker_session_t* first_connected_session;
+
+    /** \brief MQTT topics */
+    mqtt_broker_topic_t topics[MQTT_BROKER_MAX_TOPIC_COUNT];
+
+    /** \brief First free topic */
+    mqtt_broker_topic_t* first_free_topic;
+
+    /** \brief First opened */
+    mqtt_broker_topic_t* first_opened_topic;
+
+    /** \brief Subscriptions */
+    mqtt_broker_subscription_t subscriptions[MQTT_BROKER_MAX_SUBSCRIPTION_COUNT];
 
     /** \brief Temp var for the reception of a topic */
     mqtt_string_t topic;
@@ -130,6 +178,18 @@ typedef struct _mqtt_broker_t
 
 } mqtt_broker_t;
 
+
+
+
+
+/** \brief Initialize a MQTT broker */
+bool mqtt_broker_init(mqtt_broker_t* const mqtt_broker);
+
+/** \brief Start the MQTT broker */
+bool mqtt_broker_start(mqtt_broker_t* const mqtt_broker, const char* const ip_address, const uint16_t port);
+
+/** \brief Broker periodic task */
+bool mqtt_broker_task(mqtt_broker_t* const mqtt_broker);
 
 
 

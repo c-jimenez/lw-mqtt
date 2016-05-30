@@ -25,6 +25,9 @@
     <Filter Include="oal">
       <UniqueIdentifier>{73feb2ff-ac3d-40d4-a619-4e5cef2705d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{71781e91-2b69-409c-9eba-0b894960d988}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\client\mqtt_client.c">
@@ -60,6 +63,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\oal\windows\mqtt_errno_windows.c">
       <Filter>oal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\log\mqtt_log.c">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\log\mqtt_log_output_printf.c">
+      <Filter>log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\oal\windows\mqtt_mutex_t.h">
       <Filter>oal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\log\mqtt_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\log\mqtt_log_output.h">
+      <Filter>log</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

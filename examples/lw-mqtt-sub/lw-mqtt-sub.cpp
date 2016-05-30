@@ -27,6 +27,7 @@ using namespace std;
 
 #include "mqtt_client.h"
 #include "mqtt_error.h"
+#include "mqtt_log.h"
 
 /** \brief Program version */
 #define LW_MQTT_SUB_VERSION "1.0"
@@ -47,6 +48,7 @@ struct lw_mqtt_sub_params_t
         , topics()
         , current_topic(0u)
         , is_disconnected(false)
+        , verbose(false)
     {}
 
     /** \brief Broker IP address */
@@ -75,6 +77,9 @@ struct lw_mqtt_sub_params_t
 
     /** \brief Disconnection indication */
     bool is_disconnected;
+
+    /** \brief Verbose mode */
+    bool verbose;
 };
 
 
@@ -129,6 +134,17 @@ int main(int argc, char* argv[])
         /* Initialize low level layers */
         mqtt_mutex_init();
         mqtt_socket_init();
+        mqtt_log_init();
+
+        /* Set log verbosity */
+        if (params.verbose)
+        {
+            mqtt_log_set_filter(MQTT_LOG_LVL_INFO | MQTT_LOG_LVL_ERROR);
+        }
+        else
+        {
+            mqtt_log_set_filter(MQTT_LOG_LVL_ERROR);
+        }
 
         /* Create unique Client Id */
         std::srand(static_cast<unsigned int>(std::time(NULL)));
@@ -172,7 +188,7 @@ static void lw_mqtt_sub_print_usage()
 {
     cout << "usage: lw-mqtt-sub [--version] [--help] [-h <broker-ip>] [-p <broker-port>]" << endl;
     cout << "                   [-k <keepalive>] [--user <username>] [--passwd <password>]" << endl;
-    cout << "                   [-q <QoS>] [-t <topic1> [<topic2> [... <topicN>]]]" << endl;
+    cout << "                   [-q <QoS>] [-t <topic1> [<topic2> [... <topicN>]]] [-v]" << endl;
 }
 
 
@@ -309,6 +325,11 @@ static bool lw_mqtt_sub_parse_parameters(lw_mqtt_sub_params_t& params, int argc,
                 cout << "The -t option must be followed by at least one topic name.";
                 invalid_arg = true;
             }
+        }
+        else if (strcmp(*argv, "-v") == 0)
+        {
+            params.verbose = true;
+            topic_listing = false;
         }
         else
         {
