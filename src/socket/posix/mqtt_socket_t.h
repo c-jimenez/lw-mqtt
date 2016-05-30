@@ -17,35 +17,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <errno.h>
+#ifndef MQTT_SOCKET_T_H
+#define MQTT_SOCKET_T_H
 
-#include "mqtt_errno.h"
+#include "stdheaders.h"
 
-
-/** \brief Initialize the MQTT errno module */
-bool mqtt_errno_init(void)
+#ifdef __cplusplus
+extern "C"
 {
-    /* Nothing to do */
-    return true;
-}
+#endif /* __cplusplus */
 
-/** \brief De-initialize the MQTT errno module */
-bool mqtt_errno_deinit(void)
-{
-    /* Nothing to do */
-    return true;
-}
 
-/** \brief Get the current errno */
-int32_t mqtt_errno_get(void)
-{
-    const int32_t ret = (int32_t)errno;
-    return ret;
-}
+/** \brief MQTT socket */
+typedef int mqtt_socket_t;
 
-/** \brief Set the current errno */
-void mqtt_errno_set(const int32_t errno_val)
-{
-    errno = (int)errno_val;
-}
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+
+#endif /* MQTT_SOCKET_T_H */

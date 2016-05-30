@@ -17,35 +17,41 @@ You should have received a copy of the GNU Lesser General Public License
 along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <errno.h>
+#include <time.h>
 
-#include "mqtt_errno.h"
+#include "mqtt_time.h"
 
 
-/** \brief Initialize the MQTT errno module */
-bool mqtt_errno_init(void)
+/** \brief Initialize the MQTT time module */
+bool mqtt_time_init(void)
 {
     /* Nothing to do */
     return true;
 }
 
-/** \brief De-initialize the MQTT errno module */
-bool mqtt_errno_deinit(void)
+/** \brief De-initialize the MQTT time module */
+bool mqtt_time_deinit(void)
 {
     /* Nothing to do */
     return true;
 }
 
-/** \brief Get the current errno */
-int32_t mqtt_errno_get(void)
+/** \brief Get the current time in milliseconds */
+bool mqtt_time_get_current(uint32_t* const current_time)
 {
-    const int32_t ret = (int32_t)errno;
+    bool ret = false;
+
+    if (current_time != NULL)
+    {
+        struct timespec ts;
+        const int callret = clock_gettime(CLOCK_MONOTONIC, &ts);
+        if (callret == 0)
+        {
+            (*current_time) = (ts.tv_sec * 1000u) + (ts.tv_nsec/1000000u);
+            ret = true;
+        }
+    }
+
     return ret;
-}
-
-/** \brief Set the current errno */
-void mqtt_errno_set(const int32_t errno_val)
-{
-    errno = (int)errno_val;
 }
 

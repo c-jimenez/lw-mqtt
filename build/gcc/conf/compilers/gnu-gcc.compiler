@@ -19,37 +19,26 @@
 
 
 
-# Locating the root directory
-ROOT_DIR := ../../../..
+# Toolchain path
+TOOLCHAIN_PATH = /usr/bin
+TOOLCHAIN_PREFIX = 
+AS = $(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)gcc
+CC = $(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)gcc
+CXX = $(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)g++
+LD = $(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)g++
+AR = $(TOOLCHAIN_PATH)/ar
+OBJCOPY = $(TOOLCHAIN_PATH)/objcopy
+SIZE = $(TOOLCHAIN_PATH)/size
 
-# Project name
-PROJECT_NAME := lw-mqtt-sub
+# Build input command
+BUILD_INPUT_CMD=-c
 
-# Build type
-BUILD_TYPE := APP
+# Build output command
+BUILD_OUTPUT_CMD=-o
 
-# Projects that need to be build before the project or containing necessary include paths
-PROJECT_DEPENDENCIES := 
+# Link output command
+LINK_OUTPUT_CMD=-o
 
-# Librairies needed by the project
-PROJECT_LIBS := libs/lw-mqtt
-
-# Including common makefile definitions
-include $(ROOT_DIR)/build/gcc/makedefs			 
-
-# Additionnal librairies
-ifeq ($(TARGET_OS), windows)
-	LIBS := $(LIBS) -lws2_32
-endif
-ifeq ($(TARGET_OS), posix)
-	LIBS := $(LIBS)
-endif
-
-# Rules for building the source files
-$(BIN_DIR)/$(OUTPUT_NAME): $(OBJECT_FILES)
-	@echo "Linking $(notdir $@)..."
-	$(DISP)$(LD) $(LINK_OUTPUT_CMD) $@ $(LDFLAGS) $(OBJECT_FILES) $(LIBS)
-	
-	
-	
-	
+# Compiler output file extensions
+COMP_LIB_EXTENSION=.a
+COMP_EXE_EXTENSION=.elf

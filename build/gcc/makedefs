@@ -30,29 +30,29 @@ endif
 # Check if cygwin/make is used
 CYGWIN := $(findstring CYGWIN, $(shell uname))
 ifeq ("$(CYGWIN)","CYGWIN")
-    # Drive letter (windows cygwin only)
-    DRIVE_LETTER := d
-    # Root dir (absolute path)
-    ROOT_DIR_ABS := $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%, $(abspath $(ROOT_DIR)))
+	# Drive letter (windows cygwin only)
+	DRIVE_LETTER := d
+	# Root dir (absolute path)
+	ROOT_DIR_ABS := $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%, $(abspath $(ROOT_DIR)))
 else
-    # Root dir (absolute path)
-    ROOT_DIR_ABS := $(abspath $(ROOT_DIR))
+	# Root dir (absolute path)
+	ROOT_DIR_ABS := $(abspath $(ROOT_DIR))
 endif
 
 # Compiler output directories and libs
 ifeq ($(origin BUILD_OUTPUT_DIR), undefined)
-    BUILD_OUTPUT_DIR := .
+	BUILD_OUTPUT_DIR := .
 else
-    BUILD_OUTPUT_DIR := $(BUILD_OUTPUT_DIR)/$(PROJECT_NAME)
+	BUILD_OUTPUT_DIR := $(BUILD_OUTPUT_DIR)/$(PROJECT_NAME)
 endif
 
 ifeq ($(BUILD_TYPE), LIB)
 	OUTPUT_NAME = $(PROJECT_NAME)$(COMP_LIB_EXTENSION)
-    BIN_DIR := $(BUILD_OUTPUT_DIR)/$(TARGET)/bin
-    OBJ_DIR := $(BUILD_OUTPUT_DIR)/$(TARGET)/obj
-    CLEAN_DIRS := $(BIN_DIR) $(OBJ_DIR) $(TARGET)
-    COMMON_LIBS := PROJECT_REQUIRED LIB_REQUIRED
-    CLEAN_LIBS := CLEAN_PROJECT_REQUIRED CLEAN_LIB_REQUIRED
+	BIN_DIR := $(BUILD_OUTPUT_DIR)/$(TARGET)/bin
+	OBJ_DIR := $(BUILD_OUTPUT_DIR)/$(TARGET)/obj
+	CLEAN_DIRS := $(BIN_DIR) $(OBJ_DIR) $(TARGET)
+	COMMON_LIBS := PROJECT_REQUIRED LIB_REQUIRED
+	CLEAN_LIBS := CLEAN_PROJECT_REQUIRED CLEAN_LIB_REQUIRED
 else
 	ifeq ($(BUILD_TYPE), TEST)
 		OUTPUT_NAME = $(PROJECT_NAME)$(COMP_EXE_EXTENSION)
@@ -63,13 +63,13 @@ else
 		CLEAN_LIBS := CLEAN_PROJECT_REQUIRED CLEAN_LIB_REQUIRED
 		TEST_GEN_DIR = $(SOURCE_DIR)/gen
 		ifeq ("$(CYGWIN)","CYGWIN")
-		    TEST_GEN_DIR_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_GEN_DIR)))
-		    TEST_HEADER_FILE_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_HEADER_FILE)))
-		    TEST_TEMPLATE_FILE_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_TEMPLATE_FILE)))
+			TEST_GEN_DIR_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_GEN_DIR)))
+			TEST_HEADER_FILE_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_HEADER_FILE)))
+			TEST_TEMPLATE_FILE_ABS = $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%,$(abspath $(TEST_TEMPLATE_FILE)))
 		else
-		    TEST_GEN_DIR_ABS = $(abspath $(TEST_GEN_DIR))
-		    TEST_HEADER_FILE_ABS = $(abspath $(TEST_HEADER_FILE))
-		    TEST_TEMPLATE_FILE_ABS = $(abspath $(TEST_TEMPLATE_FILE))
+			TEST_GEN_DIR_ABS = $(abspath $(TEST_GEN_DIR))
+			TEST_HEADER_FILE_ABS = $(abspath $(TEST_HEADER_FILE))
+			TEST_TEMPLATE_FILE_ABS = $(abspath $(TEST_TEMPLATE_FILE))
 		endif
 		TEST_MAIN_FILE_ABS = $(TEST_GEN_DIR_ABS)/main.cpp
 		PROJECT_DEPENDENCIES := soup/cxxtest $(PROJECT_DEPENDENCIES)
@@ -98,22 +98,22 @@ include makefile.inc
 
 # Source dirs
 ifeq ("$(CYGWIN)","CYGWIN")
-    SOURCE_DIR_ABS := $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%, $(abspath $(SOURCE_DIR)))
+	SOURCE_DIR_ABS := $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%, $(abspath $(SOURCE_DIR)))
 else
-    $(abspath $(SOURCE_DIR))
+	SOURCE_DIR_ABS := $(abspath $(SOURCE_DIR))
 endif
 ifeq ($(SOURCE_DIR_COMPLETION_ENABLED), true)
-        SOURCE_DIRS_ABS_TMP := $(foreach SOURCE_DIR, $(SOURCE_DIRS), $(SOURCE_DIR) $(SOURCE_DIR)/src $(SOURCE_DIR)/src/$(TARGET_OS))
-    else
-        SOURCE_DIRS_ABS_TMP := $(SOURCE_DIRS)
-    endif
+	SOURCE_DIRS_ABS_TMP := $(foreach SOURCE_DIR, $(SOURCE_DIRS), $(SOURCE_DIR) $(SOURCE_DIR)/src $(SOURCE_DIR)/src/$(TARGET_OS))
+else
+	SOURCE_DIRS_ABS_TMP := $(SOURCE_DIRS)
+endif
 SOURCE_DIRS_ABS := $(foreach SOURCE_DIR, $(SOURCE_DIRS_ABS_TMP), $(patsubst /cygdrive/$(DRIVE_LETTER)%,$(DRIVE_LETTER):%, $(abspath $(SOURCE_DIR))))
 
 # Source files
 ifeq ($(origin PROJECT_SOURCE_FILES), undefined)
-    SOURCE_FILES := $(TEST_MAIN_FILE_ABS) $(foreach SOURCE_DIR, $(SOURCE_DIRS_ABS), $(wildcard $(SOURCE_DIR)/*.cpp) $(wildcard $(SOURCE_DIR)/*.c) $(wildcard $(SOURCE_DIR)/*.s))
+	SOURCE_FILES := $(TEST_MAIN_FILE_ABS) $(foreach SOURCE_DIR, $(SOURCE_DIRS_ABS), $(wildcard $(SOURCE_DIR)/*.cpp) $(wildcard $(SOURCE_DIR)/*.c) $(wildcard $(SOURCE_DIR)/*.s))
 else
-    SOURCE_FILES := $(TEST_MAIN_FILE_ABS) $(foreach PROJECT_SOURCE_FILE, $(PROJECT_SOURCE_FILES), $(abspath $(PROJECT_SOURCE_FILE)))
+	SOURCE_FILES := $(TEST_MAIN_FILE_ABS) $(foreach PROJECT_SOURCE_FILE, $(PROJECT_SOURCE_FILES), $(abspath $(PROJECT_SOURCE_FILE)))
 endif
 
 # Complete source dirs with test generation dir

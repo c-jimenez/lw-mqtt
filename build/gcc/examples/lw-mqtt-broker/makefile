@@ -38,8 +38,12 @@ PROJECT_LIBS := libs/lw-mqtt
 include $(ROOT_DIR)/build/gcc/makedefs			 
 
 # Additionnal librairies
-LIBS := $(LIBS) -lws2_32
-
+ifeq ($(TARGET_OS), windows)
+	LIBS := $(LIBS) -lws2_32
+endif
+ifeq ($(TARGET_OS), posix)
+	LIBS := $(LIBS)
+endif
 
 # Rules for building the source files
 $(BIN_DIR)/$(OUTPUT_NAME): $(OBJECT_FILES)

@@ -17,7 +17,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <windows.h>
 
 #include "mqtt_mutex.h"
 #include "mqtt_error.h"
@@ -46,9 +45,11 @@ bool mqtt_mutex_create(mqtt_mutex_t* const mqtt_mutex)
     if (mqtt_mutex != NULL)
     {
         /* Initialise mutex */
-        InitializeCriticalSection(&mqtt_mutex->data);
-
-        ret = true;
+        int callret = pthread_mutex_init(mqtt_mutex, NULL);
+        if (callret == 0)
+        {
+            ret = true;
+        }
     }
 
     return ret;
@@ -63,9 +64,11 @@ bool mqtt_mutex_delete(mqtt_mutex_t* const mqtt_mutex)
     if (mqtt_mutex != NULL)
     {
         /* Delete mutex */
-        DeleteCriticalSection(&mqtt_mutex->data);
-
-        ret = true;
+        int callret = pthread_mutex_destroy(mqtt_mutex);
+        if (callret == 0)
+        {
+            ret = true;
+        }
     }
 
     return ret;
@@ -80,9 +83,11 @@ bool mqtt_mutex_lock(mqtt_mutex_t* const mqtt_mutex)
     if (mqtt_mutex != NULL)
     {
         /* Lock mutex */
-        EnterCriticalSection(&mqtt_mutex->data);
-
-        ret = true;
+        int callret = pthread_mutex_lock(mqtt_mutex);
+        if (callret == 0)
+        {
+            ret = true;
+        }
     }
 
     return ret;
@@ -97,9 +102,11 @@ bool mqtt_mutex_unlock(mqtt_mutex_t* const mqtt_mutex)
     if (mqtt_mutex != NULL)
     {
         /* Unlock mutex */
-        LeaveCriticalSection(&mqtt_mutex->data);
-
-        ret = true;
+        int callret = pthread_mutex_unlock(mqtt_mutex);
+        if (callret == 0)
+        {
+            ret = true;
+        }
     }
 
     return ret;

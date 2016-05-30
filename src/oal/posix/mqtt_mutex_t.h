@@ -21,7 +21,8 @@ along with lw-mqtt.  If not, see <http://www.gnu.org/licenses/>.
 #define MQTT_MUTEX_T_H
 
 #include "stdheaders.h"
-#include <windows.h>
+
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -29,15 +30,10 @@ extern "C"
 #endif /* __cplusplus */
 
 
-/** \brief MQTT mutex */
-typedef struct _mqtt_mutex_t
-{
-    /** Implementation specific data */
-    CRITICAL_SECTION data;
 
-    /** \brief Last error */
-    int32_t last_error;
-} mqtt_mutex_t;
+/** \brief MQTT mutex */
+typedef pthread_mutex_t mqtt_mutex_t;
+
 
 
 #ifdef __cplusplus
